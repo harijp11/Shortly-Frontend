@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const userAxiosInstance = axios.create({
-  baseURL: import.meta.env.NEXT_PUBLIC_API_URL,
+  baseURL: import.meta.env.NEXT_PUBLIC_API_URL || "https://shortly-server.harijp.tech/api/user",
   withCredentials: true,
 });
 
@@ -27,7 +27,7 @@ userAxiosInstance.interceptors.response.use(
       } catch (refreshError) {
         console.error('Refresh token failed:', refreshError);
 
-        await axios.post('http://localhost:5000/api/auth/logout', {}, {
+        await axios.post('https://shortly-server.harijp.tech/api/auth/logout', {}, {
           withCredentials: true,
         });
         localStorage.removeItem('user'); 

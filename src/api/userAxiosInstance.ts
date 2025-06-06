@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const userAxiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api/user',
+  baseURL: import.meta.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 });
 
@@ -19,7 +19,7 @@ userAxiosInstance.interceptors.response.use(
 
       try {
         // Try to refresh access token
-        await axios.get('http://localhost:5000/api/auth/refresh-token', {
+        await axios.get(`${import.meta.env.AUTH_URL}/refresh-token`, {
           withCredentials: true,
         });
 

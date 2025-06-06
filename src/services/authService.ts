@@ -1,4 +1,3 @@
-import axios from 'axios'
 import axiosInstance from '../api/axiosInstance'
 
 interface RegisterData {
@@ -19,6 +18,6 @@ export const registerUser = async (data: RegisterData) => {
 }
 
 export const loginUser = async (data: LoginData) => {
-  const response = await axios.post('https://shortly-server.harijp.tech/api/auth/login', data)
+  const response = await axiosInstance.post('/login', data)
   return response.data
 }

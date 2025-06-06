@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Link2, AlertCircle } from "lucide-react"
 import { registerUser } from "@/services/authService"
+import { useNavigate } from "react-router-dom"
 
 interface RegisterFormData {
   name: string
@@ -18,11 +19,9 @@ interface RegisterFormData {
   confirmPassword: string
 }
 
-interface RegisterProps {
-  onSwitchToLogin?: () => void
-}
 
-export default function Register({ onSwitchToLogin }: RegisterProps) {
+
+export default function Register() {
   const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
     email: "",
@@ -34,7 +33,7 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [errors, setErrors] = useState<Partial<RegisterFormData>>({})
   const [isLoading, setIsLoading] = useState(false)
-
+  const navigate = useNavigate()
   const validateForm = (): boolean => {
     const newErrors: Partial<RegisterFormData> = {}
 
@@ -242,7 +241,7 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
 
             <div className="text-center text-sm text-gray-600">
               Already have an account?{" "}
-              <button type="button" onClick={onSwitchToLogin} className="text-primary hover:underline font-medium">
+              <button type="button" onClick={()=>navigate("/login")} className="text-primary hover:underline font-medium">
                 Sign in
               </button>
             </div>

@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Link2, AlertCircle } from "lucide-react";
 import { loginUser } from "@/services/authService";
 import { useDispatch } from "react-redux";
@@ -27,11 +26,9 @@ interface LoginFormData {
   rememberMe?: boolean;
 }
 
-interface LoginProps {
-  onSwitchToRegister?: () => void;
-}
 
-export default function Login({ onSwitchToRegister }: LoginProps) {
+
+export default function Login() {
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -163,16 +160,7 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="rememberMe"
-                  checked={formData.rememberMe}
-                  onCheckedChange={(checked: boolean) =>
-                    setFormData((prev) => ({ ...prev, rememberMe: checked }))
-                  }
-                />
-                <Label htmlFor="rememberMe">Remember me</Label>
-              </div>
+              
             </div>
           </CardContent>
 
@@ -185,7 +173,7 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
               {"Don't have an account?"}{" "}
               <button
                 type="button"
-                onClick={onSwitchToRegister}
+                onClick={()=>navigate("/register")}
                 className="text-primary hover:underline font-medium"
               >
                 Sign up

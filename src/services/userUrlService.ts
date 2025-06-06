@@ -29,23 +29,23 @@ interface UrlsResponse {
   }>;
 }
 
-interface AnalyticsResponse {
-  success: boolean;
-  data: {
-    url: {
-      shortUrl: string;
-      longUrl: string;
-      createdAt: string;
-    };
-    analytics: {
-      totalClicks: number;
-      clicksByDate: Record<string, number>;
-      browsers: Record<string, number>;
-      countries: Record<string, number>;
-      referrers: Record<string, number>;
-    };
-  };
-}
+// interface AnalyticsResponse {
+//   success: boolean;
+//   data: {
+//     url: {
+//       shortUrl: string;
+//       longUrl: string;
+//       createdAt: string;
+//     };
+//     analytics: {
+//       totalClicks: number;
+//       clicksByDate: Record<string, number>;
+//       browsers: Record<string, number>;
+//       countries: Record<string, number>;
+//       referrers: Record<string, number>;
+//     };
+//   };
+// }
 
 interface DeleteResponse {
   success: boolean;
@@ -72,11 +72,11 @@ export const getUserUrls = async (): Promise<UrlsResponse> => {
   return response.data;
 };
 
-// Get analytics for a specific URL
-export const getUrlAnalytics = async (urlId: string): Promise<AnalyticsResponse> => {
-  const response = await userAxiosInstance.get<AnalyticsResponse>(`/analytics/${urlId}`);
-  return response.data;
-};
+// // Get analytics for a specific URL
+// export const getUrlAnalytics = async (urlId: string): Promise<AnalyticsResponse> => {
+//   const response = await userAxiosInstance.get<AnalyticsResponse>(`/analytics/${urlId}`);
+//   return response.data;
+// };
 
 // Delete a URL
 export const deleteUrl = async (urlId: string): Promise<DeleteResponse> => {

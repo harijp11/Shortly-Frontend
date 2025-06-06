@@ -1,4 +1,5 @@
 import userAxiosInstance from '@/api/userAxiosInstance';
+import axios from 'axios';
 
 // Response interfaces
 interface ShortenResponse {
@@ -68,7 +69,7 @@ export const shortenUrl = async (
 
 // Get all user URLs
 export const getUserUrls = async (): Promise<UrlsResponse> => {
-  const response = await userAxiosInstance.get<UrlsResponse>("/urls");
+  const response = await axios.get<UrlsResponse>("https://shortly-server.harijp.tech/api/user/urls");
   return response.data;
 };
 

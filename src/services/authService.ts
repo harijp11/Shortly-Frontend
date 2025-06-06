@@ -19,6 +19,6 @@ export const registerUser = async (data: RegisterData) => {
 }
 
 export const loginUser = async (data: LoginData) => {
-  const response = await axios.post('https://shortly.harijp.tech/api/auth/login', data)
+  const response = await axios.post('https://shortly-server.harijp.tech/api/auth/login', data)
   return response.data
 }

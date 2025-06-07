@@ -41,7 +41,7 @@ interface ShortenedUrl {
   lastClicked?: string | null;
 }
 
-interface ErrorResponse {
+export interface ErrorResponse {
   response?: {
     data?: {
       message?: string;

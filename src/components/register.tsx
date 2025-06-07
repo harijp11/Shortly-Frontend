@@ -10,6 +10,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Link2, AlertCircle } from "lucide-react"
 import { registerUser } from "@/services/authService"
 import { useNavigate } from "react-router-dom"
+import { useToast } from "./ui/toast"
+import type { ErrorResponse } from "./urlShortner"
 
 interface RegisterFormData {
   name: string
@@ -19,9 +21,8 @@ interface RegisterFormData {
   confirmPassword: string
 }
 
-
-
 export default function Register() {
+  const  toast  = useToast()
   const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
     email: "",
@@ -34,6 +35,7 @@ export default function Register() {
   const [errors, setErrors] = useState<Partial<RegisterFormData>>({})
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+
   const validateForm = (): boolean => {
     const newErrors: Partial<RegisterFormData> = {}
 
@@ -72,18 +74,23 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!validateForm()) return
+    if (!validateForm()) {
+      toast.error("Please fix the form errors")
+      return
+    }
 
     setIsLoading(true)
 
     try {
       const { ...registerData } = formData
       await registerUser(registerData)
-      console.log("Registration successful:", formData)
-      // Handle successful registration (e.g., redirect or show success message)
+      toast.success("Registration successful! Please log in.")
+      navigate("/login")
     } catch (error) {
+       const err = error as ErrorResponse
       console.error("Registration failed:", error)
-      setErrors({ email: "Registration failed. Please try again." })
+       const errorMessage = (err.response?.data?.message || "Registration failed. Please try again.")
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -241,7 +248,7 @@ export default function Register() {
 
             <div className="text-center text-sm text-gray-600">
               Already have an account?{" "}
-              <button type="button" onClick={()=>navigate("/login")} className="text-primary hover:underline font-medium">
+              <button type="button" onClick={() => navigate("/login")} className="text-primary hover:underline font-medium">
                 Sign in
               </button>
             </div>

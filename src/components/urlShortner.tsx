@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -30,7 +28,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { shortenUrl, getUserUrls, deleteUrl } from "@/services/userUrlService";
-// import { getRedirectInfo } from "@/services/userUrlService";
+import { useToast } from "@/components/ui/toast";
 
 interface ShortenedUrl {
   id: string;
@@ -51,10 +49,58 @@ interface ErrorResponse {
   };
 }
 
+interface DialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  shortUrl: string;
+  shortCode: string;
+  onOpenUrl: (shortCode: string) => void;
+  onCopy: () => void;
+}
+
+function Dialog({ isOpen, onClose, shortUrl, shortCode, onOpenUrl, onCopy }: DialogProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h2 className="text-xl font-bold mb-4">URL Shortened Successfully!</h2>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium text-gray-900 mb-1">Short URL:</p>
+            <div className="flex items-center space-x-2">
+              <code className="text-sm bg-gray-100 px-2 py-1 rounded flex-1 min-w-0 truncate">
+                {shortUrl}
+              </code>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onCopy}
+                aria-label="Copy URL"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+            <Button onClick={() => onOpenUrl(shortCode)}>
+              Visit URL
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function UrlShortener() {
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const  toast  = useToast();
 
   const [url, setUrl] = useState("");
   const [customUrl, setCustomUrl] = useState("");
@@ -63,6 +109,8 @@ export default function UrlShortener() {
   const [shortenedUrls, setShortenedUrls] = useState<ShortenedUrl[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [newShortUrl, setNewShortUrl] = useState<ShortenedUrl | null>(null);
 
   const validateUrl = (url: string): boolean => {
     try {
@@ -96,6 +144,7 @@ export default function UrlShortener() {
     } catch (error) {
       console.error(error);
       setError("Failed to fetch URLs");
+      toast.error("Failed to fetch URLs");
     }
   };
 
@@ -110,11 +159,13 @@ export default function UrlShortener() {
 
     if (!url.trim()) {
       setError("Please enter a URL");
+      toast.info("Please enter a URL");
       return;
     }
 
     if (!validateUrl(url)) {
       setError("Please enter a valid URL");
+      toast.warning("Please enter a valid URL");
       return;
     }
 
@@ -134,10 +185,14 @@ export default function UrlShortener() {
           shortCode: response.data.shortCode,
         };
         setShortenedUrls((prev) => [newShortenedUrl, ...prev]);
+        setNewShortUrl(newShortenedUrl);
+        setDialogOpen(true);
+        toast.success("URL shortened successfully!");
         setUrl("");
         setCustomUrl("");
       } else {
         setError(response.message || "Failed to shorten URL");
+        toast.error(response.message || "Failed to shorten URL");
       }
     } catch (error) {
       const err = error as ErrorResponse;
@@ -145,6 +200,10 @@ export default function UrlShortener() {
       setError(
         err.response?.data?.message ||
           "Failed to shorten URL. Please try again."
+      );
+      toast.error(
+        err.response?.data?.message ||
+          "Failed to shorten URL. Please try again.",
       );
     } finally {
       setIsLoading(false);
@@ -155,9 +214,11 @@ export default function UrlShortener() {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedId(id);
+      toast.success("URL copied to clipboard!");
       setTimeout(() => setCopiedId(null), 2000);
     } catch (error) {
       console.error("Failed to copy:", error);
+      toast.error("Failed to copy URL");
     }
   };
 
@@ -170,6 +231,7 @@ export default function UrlShortener() {
     } catch (error) {
       console.error("handleOpenUrl error:", error);
       setError("Failed to open URL");
+      toast.error("Failed to open URL");
     }
   };
 
@@ -179,13 +241,16 @@ export default function UrlShortener() {
       const response = await deleteUrl(id);
       if (response.success) {
         setShortenedUrls((prev) => prev.filter((url) => url.id !== id));
+        toast.success("URL deleted successfully!");
       } else {
         setError(response.message || "Failed to delete URL");
+        toast.error(response.message || "Failed to delete URL");
       }
     } catch (error) {
       const err = error as ErrorResponse;
       console.error(err);
       setError(err.response?.data?.message || "Failed to delete URL");
+      toast.error(err.response?.data?.message || "Failed to delete URL");
     } finally {
       setIsDeleting(null);
     }
@@ -205,7 +270,7 @@ export default function UrlShortener() {
                 <Link2 className="h-8 w-8 text-primary" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold">URL Shortener</CardTitle>
+            <CardTitle className="text-2xl font-bold">Shortly</CardTitle>
             <CardDescription>
               Shorten your long URLs and track their performance
             </CardDescription>
@@ -237,7 +302,7 @@ export default function UrlShortener() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <Link2 className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold">URL Shortener</h1>
+              <h1 className="text-xl font-bold">Shortly</h1>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
@@ -400,6 +465,16 @@ export default function UrlShortener() {
           </CardContent>
         </Card>
       </main>
+      {newShortUrl && (
+        <Dialog
+          isOpen={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          shortUrl={newShortUrl.shortUrl}
+          shortCode={newShortUrl.shortCode}
+          onOpenUrl={handleOpenUrl}
+          onCopy={() => copyToClipboard(newShortUrl.shortUrl, newShortUrl.id)}
+        />
+      )}
     </div>
   );
 }

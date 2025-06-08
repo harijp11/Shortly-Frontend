@@ -77,7 +77,7 @@ export default function Login() {
       console.log("login response",response)
     } catch (error) {
        const err = error as ErrorResponse
-      console.error("Login failed:", err);
+      console.error("Login failed:", err.response);
       toast.error(err?.response?.data?.message || "Login failed")
       setErrors({ email: "Login failed. Please check your credentials." });
     } finally {

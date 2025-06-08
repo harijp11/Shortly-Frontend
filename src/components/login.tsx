@@ -17,18 +17,17 @@ import { Eye, EyeOff, Link2, AlertCircle } from "lucide-react";
 import { loginUser } from "@/services/authService";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/slice/userSlice";
-import type { AppDispatch } from "@/slice/store"; 
+import type { AppDispatch } from "@/slice/store";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "./ui/toast";
-import { ErrorResponse } from "./urlShortner";
+import { ErrorResponse } from "@/components/urlShortner";
+import axios from "axios";
 
 interface LoginFormData {
   email: string;
   password: string;
   rememberMe?: boolean;
 }
-
-
 
 export default function Login() {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -40,11 +39,11 @@ export default function Login() {
   const [errors, setErrors] = useState<Partial<LoginFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate()
-  const toast = useToast()
+  const navigate = useNavigate();
+  const toast = useToast();
   const validateForm = (): boolean => {
     const newErrors: Partial<LoginFormData> = {};
-   
+
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -71,15 +70,19 @@ export default function Login() {
       const response = await loginUser(loginData);
       if (response.success) {
         dispatch(setUser(response.user));
-        navigate("/")
-        toast.success(response.message)
+        navigate("/");
+        toast.success(response.message);
       }
-      console.log("login response",response)
+      console.log("login response", response);
     } catch (error) {
-       const err = error as ErrorResponse
-      console.error("Login failed:", err.response);
-      toast.error(err?.response?.data?.message || "Login failed")
-      setErrors({ email: "Login failed. Please check your credentials." });
+      const err = error as ErrorResponse;
+      if (axios.isAxiosError(err)) {
+        console.error("Login failed:", err.response);
+        toast.error(err?.response?.data?.message || "Login failed");
+        setErrors({ email: "Login failed. Please check your credentials." });
+      } else {
+        console.error("Unexpected error:", error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -165,9 +168,7 @@ export default function Login() {
               )}
             </div>
 
-            <div className="flex items-center justify-between">
-              
-            </div>
+            <div className="flex items-center justify-between"></div>
           </CardContent>
 
           <CardFooter className="flex flex-col space-y-4">
@@ -179,7 +180,7 @@ export default function Login() {
               {"Don't have an account?"}{" "}
               <button
                 type="button"
-                onClick={()=>navigate("/register")}
+                onClick={() => navigate("/register")}
                 className="text-primary hover:underline font-medium"
               >
                 Sign up

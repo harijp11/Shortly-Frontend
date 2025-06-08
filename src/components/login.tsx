@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "@/slice/userSlice";
 import type { AppDispatch } from "@/slice/store"; 
 import { useNavigate } from "react-router-dom";
+import { useToast } from "./ui/toast";
 
 interface LoginFormData {
   email: string;
@@ -39,9 +40,10 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate()
+  const toast = useToast()
   const validateForm = (): boolean => {
     const newErrors: Partial<LoginFormData> = {};
-
+   
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -69,8 +71,9 @@ export default function Login() {
       if (response.success) {
         dispatch(setUser(response.user));
         navigate("/")
+        toast.success(response.message)
       }
-      console.log("Login successful:", formData);
+      toast.error(response.message)
     } catch (error) {
       console.error("Login failed:", error);
       setErrors({ email: "Login failed. Please check your credentials." });

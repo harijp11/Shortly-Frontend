@@ -20,6 +20,7 @@ import { setUser } from "@/slice/userSlice";
 import type { AppDispatch } from "@/slice/store"; 
 import { useNavigate } from "react-router-dom";
 import { useToast } from "./ui/toast";
+import { ErrorResponse } from "./urlShortner";
 
 interface LoginFormData {
   email: string;
@@ -73,9 +74,11 @@ export default function Login() {
         navigate("/")
         toast.success(response.message)
       }
-      toast.error(response.message)
+      console.log("login response",response)
     } catch (error) {
-      console.error("Login failed:", error);
+       const err = error as ErrorResponse
+      console.error("Login failed:", err);
+      toast.error(err?.response?.data?.message || "Login failed")
       setErrors({ email: "Login failed. Please check your credentials." });
     } finally {
       setIsLoading(false);

@@ -20,7 +20,7 @@ import { setUser } from "@/slice/userSlice";
 import type { AppDispatch } from "@/slice/store";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "./ui/toast";
-import { ErrorResponse } from "@/components/urlShortner";
+import type { ErrorResponse } from "@/components/urlShortner";
 import axios from "axios";
 
 interface LoginFormData {

@@ -47,7 +47,7 @@ interface UrlsResponse {
 //   };
 // }
 
-interface DeleteResponse {
+interface Response {
   success: boolean;
   message: string;
 }
@@ -79,9 +79,14 @@ export const getUserUrls = async (): Promise<UrlsResponse> => {
 // };
 
 // Delete a URL
-export const deleteUrl = async (urlId: string): Promise<DeleteResponse> => {
-  const response = await userAxiosInstance.delete<DeleteResponse>(`/urls/${urlId}`);
+export const deleteUrl = async (urlId: string): Promise<Response> => {
+  const response = await userAxiosInstance.delete<Response>(`/urls/${urlId}`);
   return response.data;
 };
+
+export const logoutUser = async ():Promise<Response> =>{
+  const response = await userAxiosInstance.post("logout")
+  return response.data
+}
 
 

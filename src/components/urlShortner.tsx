@@ -27,7 +27,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { shortenUrl, getUserUrls, deleteUrl } from "@/services/userUrlService";
+import { shortenUrl, getUserUrls, deleteUrl, logoutUser } from "@/services/userUrlService";
 import { useToast } from "@/components/ui/toast";
 
 interface ShortenedUrl {
@@ -256,8 +256,16 @@ export default function UrlShortener() {
     }
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async() => {
+    try{
+      dispatch(logout());
+      const response = await logoutUser()
+      if(response.success){
+        toast.success("Logged out successfully");
+      }
+    }catch(error){
+      console.log(error)
+    }
   };
 
   if (!user) {

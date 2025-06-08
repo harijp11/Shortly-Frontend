@@ -2,6 +2,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 
+
 interface UserData {
     _id:string
   name: string
@@ -22,6 +23,7 @@ const getInitialUser = (): UserData | null => {
 const initialState: AuthState = {
   user: getInitialUser(),
 }
+
 
 const userSlice = createSlice({
   name: 'auth',

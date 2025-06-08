@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -10,7 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Link2, AlertCircle } from "lucide-react"
 import { registerUser } from "@/services/authService"
 import { useNavigate } from "react-router-dom"
-import { useToast } from "./ui/toast"
+import { useToast } from "@/components/ui/toast"
 import type { ErrorResponse } from "./urlShortner"
 
 interface RegisterFormData {

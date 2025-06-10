@@ -225,7 +225,7 @@ export default function UrlShortener() {
   const handleOpenUrl = async (shortCode: string) => {
     try {
       const apiUrl =
-        import.meta.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/user";
+        import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:5000/api/user";
       const redirectUrl = `${apiUrl}/${shortCode}`;
       console.log('redirect url =>',redirectUrl)
       window.open(redirectUrl, "_blank");

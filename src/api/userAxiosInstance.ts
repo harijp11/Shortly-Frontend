@@ -19,7 +19,7 @@ userAxiosInstance.interceptors.response.use(
 
       try {
         // Try to refresh access token
-        await axios.get(`${import.meta.env.AUTH_URL}/refresh-token`, {
+        await axios.get(`${import.meta.env.VITE_AUTH_URL}/refresh-token`, {
           withCredentials: true,
         });
 

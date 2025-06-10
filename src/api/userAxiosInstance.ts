@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const userAxiosInstance = axios.create({
-  baseURL: import.meta.env.NEXT_PUBLIC_API_URL || "https://shortly-server.harijp.tech/api/user",
+  baseURL: import.meta.env.VITE_PUBLIC_API_URL || "https://shortly-server.harijp.tech/api/user",
   withCredentials: true,
 });
 

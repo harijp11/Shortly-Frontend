@@ -1,4 +1,5 @@
 import userAxiosInstance from '@/api/userAxiosInstance';
+import { URL_API_ROUTES } from './routes/routes';
 
 // Response interfaces
 interface ShortenResponse {
@@ -29,24 +30,6 @@ interface UrlsResponse {
   }>;
 }
 
-// interface AnalyticsResponse {
-//   success: boolean;
-//   data: {
-//     url: {
-//       shortUrl: string;
-//       longUrl: string;
-//       createdAt: string;
-//     };
-//     analytics: {
-//       totalClicks: number;
-//       clicksByDate: Record<string, number>;
-//       browsers: Record<string, number>;
-//       countries: Record<string, number>;
-//       referrers: Record<string, number>;
-//     };
-//   };
-// }
-
 interface Response {
   success: boolean;
   message: string;
@@ -54,39 +37,36 @@ interface Response {
 
 // API calls
 
-// Create/Shorten URL
 export const shortenUrl = async (
-  longUrl: string, 
+  longUrl: string,
   customUrl?: string
 ): Promise<ShortenResponse> => {
-  const response = await userAxiosInstance.post<ShortenResponse>("/shorten", {
-    longUrl,
-    ...(customUrl && { customUrl }),
-  });
+  const response = await userAxiosInstance.post<ShortenResponse>(
+    URL_API_ROUTES.SHORTEN_URL,
+    {
+      longUrl,
+      ...(customUrl && { customUrl }),
+    }
+  );
   return response.data;
 };
 
-// Get all user URLs
 export const getUserUrls = async (): Promise<UrlsResponse> => {
-  const response = await userAxiosInstance.get<UrlsResponse>("/urls");
+  const response = await userAxiosInstance.get<UrlsResponse>(
+    URL_API_ROUTES.GET_URLS
+  );
   return response.data;
 };
 
-// // Get analytics for a specific URL
-// export const getUrlAnalytics = async (urlId: string): Promise<AnalyticsResponse> => {
-//   const response = await userAxiosInstance.get<AnalyticsResponse>(`/analytics/${urlId}`);
-//   return response.data;
-// };
-
-// Delete a URL
 export const deleteUrl = async (urlId: string): Promise<Response> => {
-  const response = await userAxiosInstance.delete<Response>(`/urls/${urlId}`);
+  const response = await userAxiosInstance.delete<Response>(
+    URL_API_ROUTES.DELETE_URL(urlId)
+  );
   return response.data;
 };
 
-export const logoutUser = async ():Promise<Response> =>{
-  const response = await userAxiosInstance.post("logout")
-  return response.data
-}
-
+export const logoutUser = async (): Promise<Response> => {
+  const response = await userAxiosInstance.post(URL_API_ROUTES.LOGOUT);
+  return response.data;
+};
 

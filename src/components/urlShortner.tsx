@@ -14,21 +14,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import {
-  Link2,
-  Copy,
-  ExternalLink,
-  User,
-  LogOut,
-  AlertCircle,
-  CheckCircle2,
-  Trash2,
-  BarChart3,
-} from "lucide-react";
+import { Link2, User, LogOut, AlertCircle, BarChart3, Copy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { shortenUrl, getUserUrls, deleteUrl, logoutUser } from "@/services/userUrlService";
 import { useToast } from "@/components/ui/toast";
+import { UrlDetailCard } from "./ui/customCard"; // Adjust the import path as needed
 
 interface ShortenedUrl {
   id: string;
@@ -100,7 +90,7 @@ export default function UrlShortener() {
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const  toast  = useToast();
+  const toast = useToast();
 
   const [url, setUrl] = useState("");
   const [customUrl, setCustomUrl] = useState("");
@@ -123,6 +113,14 @@ export default function UrlShortener() {
     } catch {
       return false;
     }
+  };
+
+  const validateCustomUrl = (customUrl: string): boolean => {
+    if (!customUrl.trim()) return true; // Empty custom URL is valid (optional)
+    const regex = /^[a-zA-Z0-9-]+$/; // Alphanumeric and hyphens only
+    const isValidFormat = regex.test(customUrl);
+    const isValidLength = customUrl.length >= 3 && customUrl.length <= 20;
+    return isValidFormat && isValidLength;
   };
 
   const fetchUserUrls = async () => {
@@ -169,6 +167,16 @@ export default function UrlShortener() {
       return;
     }
 
+    if (customUrl && !validateCustomUrl(customUrl)) {
+      setError(
+        "Custom URL must be 3-20 characters long and contain only letters, numbers, or hyphens"
+      );
+      toast.warning(
+        "Custom URL must be 3-20 characters long and contain only letters, numbers, or hyphens"
+      );
+      return;
+    }
+
     setIsLoading(true);
     setError("");
 
@@ -203,7 +211,7 @@ export default function UrlShortener() {
       );
       toast.error(
         err.response?.data?.message ||
-          "Failed to shorten URL. Please try again.",
+          "Failed to shorten URL. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -227,7 +235,6 @@ export default function UrlShortener() {
       const apiUrl =
         import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:5000/api/user";
       const redirectUrl = `${apiUrl}/${shortCode}`;
-      console.log('redirect url =>',redirectUrl)
       window.open(redirectUrl, "_blank");
     } catch (error) {
       console.error("handleOpenUrl error:", error);
@@ -257,15 +264,15 @@ export default function UrlShortener() {
     }
   };
 
-  const handleLogout = async() => {
-    try{
+  const handleLogout = async () => {
+    try {
       dispatch(logout());
-      const response = await logoutUser()
-      if(response.success){
+      const response = await logoutUser();
+      if (response.success) {
         toast.success("Logged out successfully");
       }
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -387,87 +394,15 @@ export default function UrlShortener() {
             ) : (
               <div className="space-y-4">
                 {shortenedUrls.map((item) => (
-                  <div
+                  <UrlDetailCard
                     key={item.id}
-                    className="border rounded-lg p-4 space-y-3"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {item.clicks} clicks
-                          </Badge>
-                          <span className="text-xs text-gray-500">
-                            Created {item.createdAt}
-                          </span>
-                          {item.customUrl && (
-                            <Badge variant="outline" className="text-xs">
-                              Custom
-                            </Badge>
-                          )}
-                          {item.lastClicked && (
-                            <span className="text-xs text-gray-500">
-                              Last clicked:{" "}
-                              {new Date(item.lastClicked).toLocaleDateString()}
-                            </span>
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          <div>
-                            <p className="text-sm font-medium text-gray-900 mb-1">
-                              Short URL:
-                            </p>
-                            <div className="flex items-center space-x-2">
-                              <code className="text-sm bg-gray-100 px-2 py-1 rounded flex-1 min-w-0 truncate">
-                                {item.shortUrl}
-                              </code>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  copyToClipboard(item.shortUrl, item.id)
-                                }
-                              >
-                                {copiedId === item.id ? (
-                                  <CheckCircle2 className="h-4 w-4 text-green-500" />
-                                ) : (
-                                  <Copy className="h-4 w-4" />
-                                )}
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleOpenUrl(item.shortCode)}
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900 mb-1">
-                              Original URL:
-                            </p>
-                            <p className="text-sm text-gray-600 truncate">
-                              {item.originalUrl}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteUrl(item.id)}
-                        disabled={isDeleting === item.id}
-                        className="ml-4 text-red-600 hover:text-red-700"
-                      >
-                        {isDeleting === item.id ? (
-                          <div className="animate-spin h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
+                    url={item}
+                    copiedId={copiedId}
+                    isDeleting={isDeleting}
+                    onCopy={copyToClipboard}
+                    onOpenUrl={handleOpenUrl}
+                    onDelete={handleDeleteUrl}
+                  />
                 ))}
               </div>
             )}

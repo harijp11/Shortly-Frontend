@@ -27,7 +27,7 @@ userAxiosInstance.interceptors.response.use(
       } catch (refreshError) {
         console.error('Refresh token failed:', refreshError);
 
-        await axios.post('https://shortly-server.harijp.tech/api/auth/logout', {}, {
+        await axios.post(`${import.meta.env.VITE_AUTH_URL}/logout`, {}, {
           withCredentials: true,
         });
         localStorage.removeItem('user'); 
